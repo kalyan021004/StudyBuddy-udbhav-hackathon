@@ -15,13 +15,8 @@ const register = async (details: {
   username: string;
   email: string;
   password: string;
-  confirm_password: string;
 }): Promise<{ success: boolean; message: string }> => {
-  const { username, email, password, confirm_password } = details;
-
-  if (password !== confirm_password) {
-    return { success: false, message: "Passwords do not match" };
-  }
+  const { username, email, password } = details;
 
   const existingUser = await User.findOne({ $or: [{ username }, { email }] });
   if (existingUser) {
@@ -46,7 +41,7 @@ const login = async (details: {
   email: string;
   password: string;
 }): Promise<
-  | { success: true; message: string; username: string; email: string }
+  | { success: true; message: string; token: string }
   | { success: false; message: string }
 > => {
   const { email, password } = details;
@@ -61,16 +56,20 @@ const login = async (details: {
     return { success: false, message: "Invalid email or password" };
   }
 
+  const jwttoken = await generateToken(user.username);
+  if (!jwttoken.success) {
+    return { success: false, message: jwttoken.message };
+  }
+
   return {
     success: true,
     message: "Login successful",
-    username: user.username,
-    email: user.email,
+    token: jwttoken.token,
   };
 };
 
 // ------------ Generate API Key for User ------------
-const generateAPI = async (username: string): Promise<
+const generateToken = async (username: string): Promise<
   | { success: true; token: string }
   | { success: false; message: string }
 > => {
@@ -94,5 +93,5 @@ const generateAPI = async (username: string): Promise<
   };
 };
 
-// ✅ Export all functions in one place
-export { register, login, generateAPI };
+
+export { register, login, generateToken };
