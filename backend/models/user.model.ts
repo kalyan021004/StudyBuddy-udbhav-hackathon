@@ -1,15 +1,6 @@
 import { Schema, model, Document } from "mongoose";
 import { v4 as uuidv4 } from "uuid";
-
-// 1. Define the interface for User document
-export interface IUser extends Document {
-  id: string;
-  username: string;
-  email: string;
-  password: Buffer; // bcrypt hash stored as Buffer
-  created_at: Date;
-  updated_at: Date;
-}
+import { IUser } from "../interface/user.interface";
 
 // 2. Create the schema
 const userSchema = new Schema<IUser>({

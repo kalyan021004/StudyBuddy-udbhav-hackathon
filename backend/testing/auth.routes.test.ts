@@ -12,8 +12,7 @@ describe("Auth Routes", () => {
     const validPayload = {
      username:"UnitTesting",
      email: "jest-test+something@backend.server",
-     password:"123456",
-     confirm_password:"123456"
+     password:"123456"
     };
 
     const response = await request(app)
@@ -30,8 +29,7 @@ describe("Auth Routes", () => {
     const validExistingPayload = {
      username:"UnitTesting",
      email: "jest-test+something@backend.server",
-     password:"123456",
-     confirm_password:"123456"
+     password:"123456"
     };
 
     const response = await request(app)

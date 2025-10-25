@@ -1,11 +1,17 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { User } from "../models/user.model";
+import { IUser } from "../interface/user.interface";
 
 interface AuthRequest extends Request {
   user?: string | JwtPayload;
 }
 
-const authMiddleware = (
+interface decodedJWT {
+  username: string;
+}
+
+const authMiddleware = async (
   req: AuthRequest,
   res: Response,
   next: NextFunction
@@ -26,11 +32,13 @@ const authMiddleware = (
       throw new Error("JWT_SECRET not configured in environment");
     }
 
-    const decoded = jwt.verify(token, secret);
-    req.user = decoded;
-
+    const decoded = jwt.verify(token, secret) as decodedJWT; 
+    const user: IUser = await User.findOne({ username: decoded.username }).select("-password");
+    if(!user) return res.status(404).json({ success: false, message: "User not found" });
+      req.user = decoded;
     next();
   } catch (error) {
+    console.error("Auth error:", error);
     return res.status(401).json({ message: "Invalid or expired token" });
   }
 };
