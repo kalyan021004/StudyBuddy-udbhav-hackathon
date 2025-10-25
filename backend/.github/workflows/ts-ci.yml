@@ -1,0 +1,35 @@
+name: TypeScript CI
+
+on:
+  push:
+    branches: [ "main" ]
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [18.x]
+
+    env:
+      PORT: ${{ secrets.PORT }}
+      MONGODB_ATLAS_URL: ${{ secrets.MONGODB_ATLAS_URL }}
+      HERE_API: ${{ secrets.HERE_API }}
+      SECRET_KEY: ${{ secrets.SECRET_KEY }}
+      DATABASE_NAME: ${{ secrets.DATABASE_NAME }}
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci && pip install -r requirements.txt
+
+      - name: Run tests
+        run: npm test
