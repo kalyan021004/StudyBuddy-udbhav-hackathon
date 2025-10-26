@@ -1,0 +1,21 @@
+# Ignore Python cache
+__pycache__/
+*.py[cod]
+
+# Ignore venv or any virtual environment folders
+venv/
+ENV/
+env/
+
+# Ignore Git and Docker files
+.git
+.gitignore
+.dockerignore
+
+# Ignore local dev config
+*.env
+*.log
+
+# Ignore IDE files
+.vscode/
+.idea/
