@@ -5,29 +5,29 @@ import jwt from "jsonwebtoken";
 
 // ------------ User Interface ------------
 interface IUser extends Document {
-  username: string;
+  name: string;  // Changed from username to name
   email: string;
   password: string;
 }
 
 // ------------ Register User ------------
 const register = async (details: {
-  username: string;
+  name: string;  // Changed from username to name
   email: string;
   password: string;
 }): Promise<{ success: boolean; message: string }> => {
-  const { username, email, password } = details;
+  const { name, email, password } = details;  // Changed from username to name
 
-  const existingUser = await User.findOne({ $or: [{ username }, { email }] });
+  const existingUser = await User.findOne({ $or: [{ name }, { email }] });  // Changed from username to name
   if (existingUser) {
-    return { success: false, message: "Username or email already exists" };
+    return { success: false, message: "Name or email already exists" };
   }
 
   const salt = await bcrypt.genSalt(10);
   const hashedPassword = await bcrypt.hash(password, salt);
 
   const newUser = new User<IUser>({
-    username,
+    name,  // Changed from username to name
     email,
     password: hashedPassword,
   } as IUser);
@@ -40,7 +40,7 @@ const register = async (details: {
 const login = async (details: {
   email: string;
   password: string;
-}): Promise<
+}): Promise
   | { success: true; message: string; token: string }
   | { success: false; message: string }
 > => {
@@ -56,7 +56,7 @@ const login = async (details: {
     return { success: false, message: "Invalid email or password" };
   }
 
-  const jwttoken = await generateToken(user.username);
+  const jwttoken = await generateToken(user.name);  // Changed from username to name
   if (!jwttoken.success) {
     return { success: false, message: jwttoken.message };
   }
@@ -69,11 +69,11 @@ const login = async (details: {
 };
 
 // ------------ Generate API Key for User ------------
-const generateToken = async (username: string): Promise<
+const generateToken = async (name: string): Promise<  // Changed from username to name
   | { success: true; token: string }
   | { success: false; message: string }
 > => {
-  const user = username;
+  const user = name;
 
   if (!process.env.SECRET_KEY) {
     return {
@@ -83,7 +83,7 @@ const generateToken = async (username: string): Promise<
   }
 
   const token = jwt.sign(
-    { username: user },
+    { name: user },  // Changed from username to name
     process.env.SECRET_KEY,
   );
 

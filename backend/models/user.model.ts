@@ -9,7 +9,7 @@ const userSchema = new Schema<IUser>({
     default: uuidv4,
     unique: true,
   },
-  username: { type: String, required: true, unique: true },
+  name: { type: String, required: true, unique: true },
   email:    { type: String, required: true, unique: true },
   password: { type: Buffer, required: true }, // Use Buffer for hashed password
   created_at: { type: Date, default: Date.now },

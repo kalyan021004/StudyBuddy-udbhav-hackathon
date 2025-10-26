@@ -10,6 +10,7 @@ import authRoutes from "./routes/auth.routes";
 
 
 const app = express();
+const PORT=8080;
 
 // ----------------- MIDDLEWARE -----------------
 app.use(cors({
@@ -19,7 +20,7 @@ app.use(cors({
 
 app.use(express.json());
 
-// Request logger middleware
+// Request logger middleware - MOVED BEFORE ROUTES
 app.use((req: Request, res: Response, next: NextFunction) => {
   console.log("➡️", req.method, req.url);
   console.log("Headers:", req.headers['authorization']);
@@ -42,14 +43,13 @@ app.get("/ping", (req: Request, res: Response) => {
   });
 });
 
+// ----------------- ACTUAL ROUTES -----------------
+app.use("/auth", authRoutes);  // REMOVED THE DUPLICATE - Keep only this one
+
 // ----------------- ERROR HANDLER -----------------
 app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
   console.error("❌ Error:", err.message);
   res.status(500).json({ error: "Internal Server Error" });
 });
-
-
-// ----------------- ACTUAL ROUTES -----------------
-app.use("/auth", authRoutes);
 
 export default app;
