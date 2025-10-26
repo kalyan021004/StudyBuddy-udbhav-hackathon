@@ -7,14 +7,15 @@ import connectDB from "./config/db.config";
 
 // ----------------- ROUTES IMPORTS -----------------
 import authRoutes from "./routes/auth.routes";
+import fileRoutes from "./routes/file.routes";
 
 
 const app = express();
 
 // ----------------- MIDDLEWARE -----------------
 app.use(cors({
-  origin: true,
-  credentials: true
+  origin: ["https://diorthotic-photospectroscopical-ahmed.ngrok-free.dev"],
+  credentials: true,
 }));
 
 app.use(express.json());
@@ -51,5 +52,6 @@ app.use((err: Error, req: Request, res: Response, next: NextFunction) => {
 
 // ----------------- ACTUAL ROUTES -----------------
 app.use("/auth", authRoutes);
+app.use("/api", fileRoutes);
 
 export default app;
