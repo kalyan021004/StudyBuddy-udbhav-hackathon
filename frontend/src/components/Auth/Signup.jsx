@@ -30,7 +30,7 @@ const Signup = () => {
 
     try {
       // UPDATE THIS URL TO YOUR BACKEND API
-      const response = await fetch('http://localhost:3000/api/signup', {
+      const response = await fetch('http://localhost:8080/auth/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

@@ -57,7 +57,7 @@ const FileDropZone = ({ onFileSelect, uploadedFile }) => {
       formData.append('fileName', file.name);
 
       // UPDATE THIS URL TO YOUR BACKEND API
-      const response = await fetch('http://localhost:3000/api/upload', {
+      const response = await fetch('https://studybuddy-udbhav-hackathon.onrender.com/api/upload', {
         method: 'POST',
         headers: {
           'Authorization': `Bearer ${token}`,

@@ -2,24 +2,48 @@ import React, { useState } from 'react';
 import { Send } from 'lucide-react';
 import Button from '../UI/Button';
 
-const ChatInput = ({ onSend, disabled, uploadedFile, placeholder }) => {
+const ChatInput = ({ onSend, uploadedFile, placeholder }) => {
   const [message, setMessage] = useState('');
   const [isSending, setIsSending] = useState(false);
+  const [error, setError] = useState('');
   
   const handleSend = async () => {
     const trimmedMessage = message.trim();
     
-    if (!trimmedMessage || disabled || isSending) {
+    if (!trimmedMessage || isSending) {
       return;
     }
     
     setIsSending(true);
+    setError('');
     
     try {
-      await onSend(trimmedMessage);
+      const token = localStorage.getItem('token');
+      
+      const response = await fetch('https://studybuddy-udbhav-hackathon.onrender.com/api/ask', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          question: trimmedMessage,
+          fileId: uploadedFile?.id, // Include the uploaded file ID
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to send message');
+      }
+
+      const data = await response.json();
+      
+      // Call parent callback with the message and response
+      await onSend(trimmedMessage, data);
       setMessage(''); // Clear input after successful send
     } catch (error) {
       console.error('Error sending message:', error);
+      setError('Failed to send message. Please try again.');
     } finally {
       setIsSending(false);
     }
@@ -41,6 +65,17 @@ const ChatInput = ({ onSend, disabled, uploadedFile, placeholder }) => {
   
   return (
     <div className="bg-white border-top p-3">
+      {error && (
+        <div className="alert alert-danger alert-dismissible fade show mb-2" role="alert">
+          {error}
+          <button 
+            type="button" 
+            className="btn-close btn-close-sm" 
+            onClick={() => setError('')}
+          ></button>
+        </div>
+      )}
+      
       <div className="d-flex gap-2 align-items-center">
         <input
           type="text"
@@ -48,18 +83,14 @@ const ChatInput = ({ onSend, disabled, uploadedFile, placeholder }) => {
           onChange={(e) => setMessage(e.target.value)}
           onKeyPress={handleKeyPress}
           placeholder={placeholderText}
-          disabled={disabled || isSending}
+          disabled={isSending}
           className="form-control"
-          style={{
-            backgroundColor: disabled ? '#f8f9fa' : 'white',
-            cursor: disabled ? 'not-allowed' : 'text'
-          }}
         />
         <Button 
           variant="primary" 
           size="md" 
           onClick={handleSend}
-          disabled={disabled || !message.trim() || isSending}
+          disabled={!message.trim() || isSending}
           className="text-nowrap"
         >
           {isSending ? (
@@ -70,19 +101,11 @@ const ChatInput = ({ onSend, disabled, uploadedFile, placeholder }) => {
           ) : (
             <>
               Send
-              <Send size={18} />
+              <Send size={18} className="ms-1" />
             </>
           )}
         </Button>
       </div>
-      
-      {disabled && !uploadedFile && (
-        <div className="mt-2">
-          <small className="text-muted">
-            Upload a document to start chatting
-          </small>
-        </div>
-      )}
     </div>
   );
 };

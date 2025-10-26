@@ -25,10 +25,38 @@ export const AuthProvider = ({ children }) => {
     setLoading(false);
   }, []);
 
+  // Register function
+  const register = async (email, password, name) => {
+    try {
+      const response = await fetch('http://localhost:8080/auth/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ email, password, name }),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        // Optionally auto-login after registration
+        localStorage.setItem('token', data.token);
+        localStorage.setItem('user', JSON.stringify(data.user));
+        setUser(data.user);
+        return { success: true };
+      } else {
+        return { success: false, error: data.message || 'Registration failed' };
+      }
+    } catch (error) {
+      console.error('Registration error:', error);
+      return { success: false, error: 'Network error. Please try again.' };
+    }
+  };
+
   // Login function
   const login = async (email, password) => {
     try {
-      const response = await fetch('http://your-backend-url/api/login', {
+      const response = await fetch('http://localhost:8080/auth/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -59,7 +87,7 @@ export const AuthProvider = ({ children }) => {
       // Optional: Call backend logout endpoint
       const token = localStorage.getItem('token');
       if (token) {
-        await fetch('http://your-backend-url/api/logout', {
+        await fetch('http://localhost:8080/auth/logout', {
           method: 'POST',
           headers: {
             'Authorization': `Bearer ${token}`,
@@ -83,6 +111,7 @@ export const AuthProvider = ({ children }) => {
 
   const value = {
     user,
+    register,
     login,
     logout,
     isAuthenticated,
