@@ -1,0 +1,10 @@
+# requirements.txt
+flask
+google-generativeai
+chromadb
+sentence-transformers
+PyMuPDF
+python-dotenv
+pytesseract
+Pillow
+python-docx
